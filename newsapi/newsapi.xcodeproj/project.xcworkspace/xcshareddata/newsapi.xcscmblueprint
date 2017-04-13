@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "B5F40D1152C939BA4AA142089754EB6E04BB1AA6",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "D2B3D9384DF4A110ADF48DE8CE7FD5BE8985314C" : 9223372036854775807,
+    "B5F40D1152C939BA4AA142089754EB6E04BB1AA6" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "2D0B9F28-2ABB-4725-B50A-71D961DEB5F3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "D2B3D9384DF4A110ADF48DE8CE7FD5BE8985314C" : "..\/..",
+    "B5F40D1152C939BA4AA142089754EB6E04BB1AA6" : "newsapi.git\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "newsapi",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "newsapi\/newsapi.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/PROudoxa\/newsapi.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "B5F40D1152C939BA4AA142089754EB6E04BB1AA6"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/PROudoxa\/git-first.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D2B3D9384DF4A110ADF48DE8CE7FD5BE8985314C"
+    }
+  ]
+}
