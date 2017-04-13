@@ -10,7 +10,7 @@ import UIKit
 
 class Article: NSObject {
     
-    var headline: String?
+    var title: String?
     var descr: String?
     var author: String?
     var url: String?

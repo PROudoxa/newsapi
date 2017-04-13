@@ -13,15 +13,67 @@ class ViewController: UIViewController, UITabBarDelegate, UITableViewDataSource 
     
     @IBOutlet weak var tableView: UITableView!
     
+    var articles: [Article]? = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        fetchArticles()
+        
+        
     }
+    
+    func fetchArticles() {
+        let urlRequest = URLRequest(url: URL(string: "https://newsapi.org/v1/articles?source=techcrunch&sortBy=top&apiKey=bcfdf65e5ef5469fa6508ee3edba275f")!)
+        let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
+            if error != nil {
+                print(error!)
+                return
+            }
+            
+            self.articles = [Article]()
+            
+            do {
+                let json = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! [String: AnyObject]
+                if let articlesFromJson = json["articles"] as? [[String: AnyObject]] {
+                    for articleFromJson in articlesFromJson {
+                        let article = Article()
+                        if let title = articleFromJson["title"] as? String,
+                            let author = articleFromJson["author"] as? String,
+                            let descr = articleFromJson["description"] as? String,
+                            let url = articleFromJson["url"] as? String,
+                            let urlToImage = articleFromJson["urlToImage"] as? String
+                        {
+                            article.author = author
+                            article.descr = descr
+                            article.url = url
+                            article.title = title
+                            article.imageUrl = urlToImage
+                        }
+                        self.articles?.append(article)
+                    }
+                }
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+            } catch let error {
+                print(error)
+            }
+        }
+        task.resume()
+    }
+    
+    
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "articleCell", for: indexPath) as! ArticleCell
-        cell.titleLabel.text = "title will be here"
+        //cell.titleLabel.text = self.articles?[indexPath.item].headline
+        cell.titleLabel.text = self.articles?[indexPath.item].title
         cell.imageArticleView.backgroundColor = UIColor.lightGray
+        cell.descriptionLabel.text = self.articles?[indexPath.item].descr
+        cell.authorLabel.text = self.articles?[indexPath.item].author
+        
         
         return cell
     }
@@ -31,7 +83,7 @@ class ViewController: UIViewController, UITabBarDelegate, UITableViewDataSource 
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return self.articles?.count ?? 0
     }
 
 }
