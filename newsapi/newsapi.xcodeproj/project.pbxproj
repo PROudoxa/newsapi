@@ -14,6 +14,7 @@
 		FAC2D5181E9F8D7A00830305 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC2D5161E9F8D7A00830305 /* LaunchScreen.storyboard */; };
 		FAC2D5201E9F99B700830305 /* ArticleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2D51F1E9F99B700830305 /* ArticleCell.swift */; };
 		FAC2D5221E9FA51F00830305 /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2D5211E9FA51F00830305 /* Article.swift */; };
+		FAC2D5241E9FE01400830305 /* WebviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2D5231E9FE01400830305 /* WebviewViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		FAC2D5191E9F8D7A00830305 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FAC2D51F1E9F99B700830305 /* ArticleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArticleCell.swift; sourceTree = "<group>"; };
 		FAC2D5211E9FA51F00830305 /* Article.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
+		FAC2D5231E9FE01400830305 /* WebviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebviewViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +68,7 @@
 				FAC2D5191E9F8D7A00830305 /* Info.plist */,
 				FAC2D51F1E9F99B700830305 /* ArticleCell.swift */,
 				FAC2D5211E9FA51F00830305 /* Article.swift */,
+				FAC2D5231E9FE01400830305 /* WebviewViewController.swift */,
 			);
 			path = newsapi;
 			sourceTree = "<group>";
@@ -144,6 +147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC2D5221E9FA51F00830305 /* Article.swift in Sources */,
+				FAC2D5241E9FE01400830305 /* WebviewViewController.swift in Sources */,
 				FAC2D5101E9F8D7A00830305 /* ViewController.swift in Sources */,
 				FAC2D50E1E9F8D7A00830305 /* AppDelegate.swift in Sources */,
 				FAC2D5201E9F99B700830305 /* ArticleCell.swift in Sources */,
@@ -310,6 +314,7 @@
 				FAC2D51E1E9F8D7A00830305 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
