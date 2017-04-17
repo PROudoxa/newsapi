@@ -21,30 +21,49 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     var categories: Set<String> = Set<String>()
     var languages: Set<String> = Set<String>()
     var countries: Set<String> = Set<String>()
+    
+    var languageActiveIndex: Int = 0
+    var categoriesPickerActiveIndex: Int = 0
+    var countriesPickerActiveIndex: Int = 0
 
-    //var categoryArray: [String] = ["0","1","2","3","4","5","6","7","8","9"]
+    var languagesArray: [String] = ["all", "en", "de", "fr"]
     var pickerDataSource: [[String]] = [
-        ["bisiss", "entertainment", "gng", "general", "music", "politics", "science-and-nature", "sport", "technology"],
-        ["au", "de", "gb", "in", "it", "us"]
-        //["en", "de", "fr"]
+            ["all", "business", "entertainment", "gaming", "general", "music", "politics", "science-and-nature", "sport", "technology"],
+            ["all", "au", "de", "gb", "in", "it", "us"]
         ]
+    
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var pickerView: UIPickerView!
+    @IBOutlet weak var segmentControl: UISegmentedControl!
     
     @IBAction func goBack(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
     
-    override func viewDidLoad() {
+    @IBAction func segmentChanged(_ sender: Any) {
+        languageActiveIndex = segmentControl.selectedSegmentIndex
+        sourcesBase = self.sources!
+        if languageActiveIndex != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex]}
+        }
+        if categoriesPickerActiveIndex != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][categoriesPickerActiveIndex] }
+        }
+        if countriesPickerActiveIndex != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][countriesPickerActiveIndex] }
+        }
         
+        self.tableView.reloadData()
+    }
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         self.pickerView.dataSource = self;
         self.pickerView.delegate = self;
         
         fetchSources()
-
     }
     
     func fetchSources() {
@@ -72,9 +91,10 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                         source.url = sourceFromJson["url"] as? String
                         source.descriptionSource = sourceFromJson["description"] as? String
                         source.sortBysAvailable = sourceFromJson["sortBysAvailable"] as? String
-                            
-                        self.sources?.append(source)
                         
+                        if source.id != nil {
+                            self.sources?.append(source)
+                        }
                         
                         if let category = sourceFromJson["category"] as? String {
                             self.categories.insert(category)
@@ -86,8 +106,8 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                             self.countries.insert(country)
                         }
                         
-                        var categoriesArray: [String] = []
-                        var countriesArray: [String] = []
+                        var categoriesArray: [String] = ["all"]
+                        var countriesArray: [String] = ["all"]
                         var languagesArray: [String] = []
                         
                         for category in self.categories.sorted() {
@@ -99,7 +119,6 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                         for country in self.countries.sorted() {
                             countriesArray.append(country)
                         }
-                        
                         
                         if (self.pickerDataSource[0] != categoriesArray || self.pickerDataSource[1] != countriesArray) {
                             self.pickerDataSource = [categoriesArray, countriesArray]
@@ -123,10 +142,9 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     }
     
     
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listOfSourcesCell", for: indexPath)
-        cell.textLabel?.text = self.sources?[indexPath.item].name
+        cell.textLabel?.text = self.sources?[indexPath.item].name ?? "unknown source"
         
         return cell
     }
@@ -169,24 +187,39 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         
-        return pickerDataSource[component][row]  //categoryArray[row]
+        return pickerDataSource[component][row]
     }
-    
-    var lang = ""
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int)
-    {
-        if component == 0 {
-            sourcesBase = self.sources!.filter(){ $0.category == pickerDataSource[component][row] } //"business" }
-            //sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][row] } //"business" }
-            self.tableView.reloadData()
+        
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        sourcesBase = self.sources!
+        
+        if component == 0 { // categories picker
+            if row != 0 {
+                sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][row] }
+            }
+            if languageActiveIndex != 0 {
+                sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
+            }
+            if countriesPickerActiveIndex != 0 {
+                sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][countriesPickerActiveIndex] }
+            }
+            categoriesPickerActiveIndex = row
         }
         
-        if component == 1 {
-            //sourcesBase = self.sources!.filter(){ $0.category == pickerDataSource[0][row] } //"business" }
-            sourcesBase = self.sources!.filter(){ $0.country == pickerDataSource[component][row] } //"business" }
-            self.tableView.reloadData()
+        if component == 1 { // countries picker
+            if row != 0 {
+                sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][row] }
+            }
+            if languageActiveIndex != 0 {
+                sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
+            }
+            if categoriesPickerActiveIndex != 0 {
+                sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][categoriesPickerActiveIndex] }
+            }
+            countriesPickerActiveIndex = row
         }
+        self.tableView.reloadData()
     }
 }
 

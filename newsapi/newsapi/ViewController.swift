@@ -10,13 +10,10 @@ import UIKit
 
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, SourceDidSelected {
 
-    
-    @IBOutlet weak var tableView: UITableView!
-    
     var articles: [Article]? = []
     var sourceName: String = "techcrunch"
     
-    
+    @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +30,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func userDidSelectSource(sourceId: String) {
         sourceName = sourceId
-        //sourceName = "al-jazeera-english"
         fetchArticles()
     }
     
@@ -52,20 +48,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if let articlesFromJson = json["articles"] as? [[String: AnyObject]] {
                     for articleFromJson in articlesFromJson {
                         let article = Article()
-                         let title = articleFromJson["title"] as? String
-                            let author = articleFromJson["author"] as? String
-                            let descr = articleFromJson["description"] as? String
-                            let url = articleFromJson["url"] as? String
-                            let urlToImage = articleFromJson["urlToImage"] as? String
                         
-                            article.author = author
-                            article.descr = descr
-                            article.url = url
-                            article.title = title
-                            article.imageUrl = urlToImage
+                        article.author = articleFromJson["author"] as? String
+                        article.descr = articleFromJson["description"] as? String
+                        article.url = articleFromJson["url"] as? String
+                        article.title = articleFromJson["title"] as? String
+                        article.imageUrl = articleFromJson["urlToImage"] as? String
                             
-                            self.articles?.append(article)
-                        
+                        self.articles?.append(article)
                     }
                 }
                 DispatchQueue.main.async {
@@ -79,14 +69,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         task.resume()
     }
     
-    
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "articleCell", for: indexPath) as! ArticleCell
-        cell.titleLabel.text = self.articles?[indexPath.item].title
-        //cell.imageArticleView.backgroundColor = UIColor.lightGray
-        cell.descriptionLabel.text = self.articles?[indexPath.item].descr
-        cell.authorLabel.text = self.articles?[indexPath.item].author
+        cell.titleLabel.text = self.articles?[indexPath.item].title ?? ""
+        cell.descriptionLabel.text = self.articles?[indexPath.item].descr ?? ""
+        cell.authorLabel.text = self.articles?[indexPath.item].author ?? ""
         
         if let imageUrl = self.articles?[indexPath.item].imageUrl! {
             cell.imageArticleView.downloadImage(from: (imageUrl))
@@ -113,16 +101,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     @IBAction func menuTapped(_ sender: Any) {
-        print("menuTapped")
         let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
         
         let menuViewController = storyBoard.instantiateViewController(withIdentifier: "menu") as! MenuManagerViewController
         self.present(menuViewController, animated:true, completion:nil)
     }
-    
-    
-
 }
+
+
 
 extension UIImageView {
     func downloadImage(from url: String) {
@@ -139,8 +125,6 @@ extension UIImageView {
         task.resume()
     }
 }
-
-
 
 
 

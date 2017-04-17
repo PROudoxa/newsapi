@@ -17,15 +17,9 @@ class WebviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        webview.loadRequest(URLRequest(url: URL(string: url!)!))
-        
-        
+        if url != nil {
+            webview.loadRequest(URLRequest(url: URL(string: url!)!))
+        }
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-
 
 }

@@ -165,12 +165,26 @@
                                     <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 </textAttributes>
                                 <items>
-                                    <navigationItem title="Menu" id="IzH-sm-owd">
+                                    <navigationItem id="IzH-sm-owd">
+                                        <nil key="title"/>
                                         <barButtonItem key="leftBarButtonItem" title="&lt; Back" id="CL9-Tg-luX">
                                             <connections>
                                                 <action selector="goBack:" destination="GS3-4Q-YIR" id="yE6-4O-iec"/>
                                             </connections>
                                         </barButtonItem>
+                                        <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="qhq-Tj-66c">
+                                            <rect key="frame" x="98" y="7" width="180" height="30"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <segments>
+                                                <segment title="All"/>
+                                                <segment title="En"/>
+                                                <segment title="De"/>
+                                                <segment title="Fr"/>
+                                            </segments>
+                                            <connections>
+                                                <action selector="segmentChanged:" destination="GS3-4Q-YIR" eventType="valueChanged" id="lVn-CD-E5e"/>
+                                            </connections>
+                                        </segmentedControl>
                                     </navigationItem>
                                 </items>
                             </navigationBar>
@@ -230,12 +244,13 @@
                     </view>
                     <connections>
                         <outlet property="pickerView" destination="uiN-uD-a0G" id="rbX-0R-j45"/>
+                        <outlet property="segmentControl" destination="qhq-Tj-66c" id="ySO-dY-nF3"/>
                         <outlet property="tableView" destination="bgP-bq-GmU" id="QGb-ql-oj0"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="o85-lD-JYe" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1055" y="832"/>
+            <point key="canvasLocation" x="866" y="845"/>
         </scene>
         <!--Webview View Controller-->
         <scene sceneID="z0H-Nc-387">
