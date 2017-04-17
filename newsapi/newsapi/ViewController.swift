@@ -11,12 +11,19 @@ import UIKit
 class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, SourceDidSelected {
 
     var articles: [Article]? = []
+    let defaults = UserDefaults.standard
+
     var sourceName: String = "techcrunch"
+    
     
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+                
+        if let sourceNameSaved = defaults.string(forKey: "sourceNameSaved") {
+            sourceName = sourceNameSaved
+        }
         
         fetchArticles()
     }
@@ -28,9 +35,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    func userDidSelectSource(sourceId: String) {
+    func userDidSelectSource(sourceId: String, lastSourceName: String?) {
         sourceName = sourceId
+        navigationItem.title = lastSourceName ?? "News Reader"
         fetchArticles()
+        defaults.set(sourceName, forKey: "sourceNameSaved")
     }
     
     func fetchArticles() {
@@ -76,8 +85,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.descriptionLabel.text = self.articles?[indexPath.item].descr ?? ""
         cell.authorLabel.text = self.articles?[indexPath.item].author ?? ""
         
-        if let imageUrl = self.articles?[indexPath.item].imageUrl! {
-            cell.imageArticleView.downloadImage(from: (imageUrl))
+        let imageUrl: String? = self.articles?[indexPath.item].imageUrl
+        
+        if (imageUrl != nil) && (imageUrl != "") {
+            cell.imageArticleView.downloadImage(from: (imageUrl)!)
         } else {
             cell.imageArticleView.backgroundColor = UIColor.lightGray
         }

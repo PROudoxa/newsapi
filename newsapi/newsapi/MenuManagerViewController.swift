@@ -9,7 +9,7 @@
 import UIKit
 
 protocol SourceDidSelected {
-    func userDidSelectSource(sourceId: String)
+    func userDidSelectSource(sourceId: String, lastSourceName: String?)
 }
 
 class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource {
@@ -17,7 +17,8 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     var delegate: SourceDidSelected? = nil
     var sources: [Sources]? = []
     var sourcesBase: [Sources] = []
-    
+    let defaults = UserDefaults.standard
+
     var categories: Set<String> = Set<String>()
     var languages: Set<String> = Set<String>()
     var countries: Set<String> = Set<String>()
@@ -38,11 +39,13 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     @IBOutlet weak var segmentControl: UISegmentedControl!
     
     @IBAction func goBack(_ sender: Any) {
+        savePickerAndSegmentIndexes()
         self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func segmentChanged(_ sender: Any) {
         languageActiveIndex = segmentControl.selectedSegmentIndex
+        
         sourcesBase = self.sources!
         if languageActiveIndex != 0 {
             sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex]}
@@ -63,6 +66,8 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
         self.pickerView.dataSource = self;
         self.pickerView.delegate = self;
         
+        restorePickerAndSegmentIndexes()
+
         fetchSources()
     }
     
@@ -141,6 +146,29 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
         task.resume()
     }
     
+    func restorePickerAndSegmentIndexes() {
+        let languageActiveIndexSaved: Int? = defaults.integer(forKey: "languageActiveIndex")
+        let categoriesPickerActiveIndexSaved: Int? = defaults.integer(forKey: "categoriesPickerActiveIndex")
+        let countriesPickerActiveIndexSaved: Int? = defaults.integer(forKey: "countriesPickerActiveIndex")
+
+        if  languageActiveIndexSaved != nil {
+            languageActiveIndex = languageActiveIndexSaved!
+        }
+        if  categoriesPickerActiveIndexSaved != nil {
+            languageActiveIndex = categoriesPickerActiveIndexSaved!
+        }
+        if countriesPickerActiveIndexSaved != nil {
+            languageActiveIndex = countriesPickerActiveIndexSaved!
+        }
+    }
+    
+    func savePickerAndSegmentIndexes() {
+        defaults.set(countriesPickerActiveIndex, forKey: "countriesPickerActiveIndex")
+        defaults.set(categoriesPickerActiveIndex, forKey: "categoriesPickerActiveIndex")
+        defaults.set(languageActiveIndex, forKey: "languageActiveIndex")
+    }
+    
+    // MARK: tableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listOfSourcesCell", for: indexPath)
@@ -160,7 +188,10 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if (delegate != nil) {
             let sourceId: String = self.sourcesBase[indexPath.item].id!
-            delegate?.userDidSelectSource(sourceId: sourceId)
+            let lastSourceName: String? = self.sourcesBase[indexPath.item].name!
+            delegate?.userDidSelectSource(sourceId: sourceId, lastSourceName: lastSourceName)
+    
+            savePickerAndSegmentIndexes()
             self.navigationController?.popViewController(animated: true)
         }
     }
@@ -172,8 +203,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
         return 2
     }
     
-    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat
-    {
+    func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
         print(pickerView)
         if component == 0 {
             return CGFloat(300.0)
@@ -186,7 +216,6 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        
         return pickerDataSource[component][row]
     }
         
@@ -198,10 +227,10 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
             if row != 0 {
                 sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][row] }
             }
-            if languageActiveIndex != 0 {
+            if (languageActiveIndex != 0) && (languageActiveIndex < languagesArray.count){
                 sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
             }
-            if countriesPickerActiveIndex != 0 {
+            if (countriesPickerActiveIndex != 0) && (countriesPickerActiveIndex < pickerDataSource[1].count) {
                 sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][countriesPickerActiveIndex] }
             }
             categoriesPickerActiveIndex = row
@@ -211,10 +240,10 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
             if row != 0 {
                 sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][row] }
             }
-            if languageActiveIndex != 0 {
+            if (languageActiveIndex != 0) && (languageActiveIndex < languagesArray.count){
                 sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
             }
-            if categoriesPickerActiveIndex != 0 {
+            if (categoriesPickerActiveIndex != 0) && (categoriesPickerActiveIndex < pickerDataSource[0].count) {
                 sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][categoriesPickerActiveIndex] }
             }
             countriesPickerActiveIndex = row
