@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FA929F551EA107D50005AF4C /* MenuManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA929F541EA107D50005AF4C /* MenuManagerViewController.swift */; };
 		FAC2D50E1E9F8D7A00830305 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2D50D1E9F8D7A00830305 /* AppDelegate.swift */; };
 		FAC2D5101E9F8D7A00830305 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC2D50F1E9F8D7A00830305 /* ViewController.swift */; };
 		FAC2D5131E9F8D7A00830305 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FAC2D5111E9F8D7A00830305 /* Main.storyboard */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FA929F541EA107D50005AF4C /* MenuManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuManagerViewController.swift; sourceTree = "<group>"; };
 		FAC2D50A1E9F8D7A00830305 /* newsapi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = newsapi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC2D50D1E9F8D7A00830305 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FAC2D50F1E9F8D7A00830305 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -69,6 +71,7 @@
 				FAC2D51F1E9F99B700830305 /* ArticleCell.swift */,
 				FAC2D5211E9FA51F00830305 /* Article.swift */,
 				FAC2D5231E9FE01400830305 /* WebviewViewController.swift */,
+				FA929F541EA107D50005AF4C /* MenuManagerViewController.swift */,
 			);
 			path = newsapi;
 			sourceTree = "<group>";
@@ -147,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FAC2D5221E9FA51F00830305 /* Article.swift in Sources */,
+				FA929F551EA107D50005AF4C /* MenuManagerViewController.swift in Sources */,
 				FAC2D5241E9FE01400830305 /* WebviewViewController.swift in Sources */,
 				FAC2D5101E9F8D7A00830305 /* ViewController.swift in Sources */,
 				FAC2D50E1E9F8D7A00830305 /* AppDelegate.swift in Sources */,

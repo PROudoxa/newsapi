@@ -17,3 +17,16 @@ class Article: NSObject {
     var imageUrl: String?
 
 }
+
+class Sources: NSObject {
+    
+    var id: String?
+    var name: String?
+    var descriptionSource: String?
+    var url: String?
+    var category: String?
+    var language: String?
+    var country: String?
+    var sortBysAvailable: String?
+    
+}

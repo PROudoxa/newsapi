@@ -8,23 +8,37 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, SourceDidSelected {
 
     
     @IBOutlet weak var tableView: UITableView!
     
     var articles: [Article]? = []
+    var sourceName: String = "techcrunch"
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         fetchArticles()
-        
-        
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showMenu" {
+            let menuVC: MenuManagerViewController = segue.destination as! MenuManagerViewController
+            menuVC.delegate = self
+        }
+    }
+    
+    func userDidSelectSource(sourceId: String) {
+        sourceName = sourceId
+        //sourceName = "al-jazeera-english"
+        fetchArticles()
     }
     
     func fetchArticles() {
-        let urlRequest = URLRequest(url: URL(string: "https://newsapi.org/v1/articles?source=techcrunch&sortBy=top&apiKey=bcfdf65e5ef5469fa6508ee3edba275f")!)
+        let urlRequest = URLRequest(url: URL(string: "https://newsapi.org/v1/articles?source=\(sourceName)&sortBy=top&apiKey=bcfdf65e5ef5469fa6508ee3edba275f")!)
         let task = URLSession.shared.dataTask(with: urlRequest) { (data, response, error) in
             if error != nil {
                 print(error ?? "printing error has been failed")
@@ -38,19 +52,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 if let articlesFromJson = json["articles"] as? [[String: AnyObject]] {
                     for articleFromJson in articlesFromJson {
                         let article = Article()
-                        if let title = articleFromJson["title"] as? String,
-                            let author = articleFromJson["author"] as? String,
-                            let descr = articleFromJson["description"] as? String,
-                            let url = articleFromJson["url"] as? String,
+                         let title = articleFromJson["title"] as? String
+                            let author = articleFromJson["author"] as? String
+                            let descr = articleFromJson["description"] as? String
+                            let url = articleFromJson["url"] as? String
                             let urlToImage = articleFromJson["urlToImage"] as? String
-                        {
+                        
                             article.author = author
                             article.descr = descr
                             article.url = url
                             article.title = title
                             article.imageUrl = urlToImage
-                        }
-                        self.articles?.append(article)
+                            
+                            self.articles?.append(article)
+                        
                     }
                 }
                 DispatchQueue.main.async {
@@ -73,8 +88,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.descriptionLabel.text = self.articles?[indexPath.item].descr
         cell.authorLabel.text = self.articles?[indexPath.item].author
         
-        cell.imageArticleView.downloadImage(from: (self.articles?[indexPath.item].imageUrl!)!)
-        
+        if let imageUrl = self.articles?[indexPath.item].imageUrl! {
+            cell.imageArticleView.downloadImage(from: (imageUrl))
+        } else {
+            cell.imageArticleView.backgroundColor = UIColor.lightGray
+        }
         
         return cell
     }
@@ -93,6 +111,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.present(webVC, animated: true, completion: nil)
     }
+    
+    @IBAction func menuTapped(_ sender: Any) {
+        print("menuTapped")
+        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+        
+        let menuViewController = storyBoard.instantiateViewController(withIdentifier: "menu") as! MenuManagerViewController
+        self.present(menuViewController, animated:true, completion:nil)
+    }
+    
     
 
 }
