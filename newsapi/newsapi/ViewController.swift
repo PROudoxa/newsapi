@@ -21,11 +21,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
                 
-        if let sourceNameSaved = defaults.string(forKey: "sourceNameSaved") {
+        if let sourceNameSaved = defaults.string(forKey: "sourceNameSaved") { // restore last articles
             sourceName = sourceNameSaved
         }
         
         fetchArticles()
+    }
+    
+    @IBAction func menuTapped(_ sender: Any) {
+        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+        
+        let menuViewController = storyBoard.instantiateViewController(withIdentifier: "menu") as! MenuManagerViewController
+        self.present(menuViewController, animated:true, completion:nil)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -78,7 +85,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         task.resume()
     }
     
-
+    // MARK: tableView
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "articleCell", for: indexPath) as! ArticleCell
         cell.titleLabel.text = self.articles?[indexPath.item].title ?? ""
@@ -111,12 +119,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.present(webVC, animated: true, completion: nil)
     }
     
-    @IBAction func menuTapped(_ sender: Any) {
-        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
-        
-        let menuViewController = storyBoard.instantiateViewController(withIdentifier: "menu") as! MenuManagerViewController
-        self.present(menuViewController, animated:true, completion:nil)
-    }
 }
 
 

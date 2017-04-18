@@ -15,7 +15,7 @@ protocol SourceDidSelected {
 class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource {
 
     var delegate: SourceDidSelected? = nil
-    var FetchedSources: [Sources] = []
+    var fetchedSources: [Sources] = []
     var sourcesBase: [Sources] = []
     let defaults = UserDefaults.standard
 
@@ -23,6 +23,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     var languages: Set<String> = Set<String>()
     var countries: Set<String> = Set<String>()
     
+    // indexes for pickerView and segmentControl
     var languageActiveIndex: Int = 0
     var categoriesPickerActiveIndex: Int = 0
     var countriesPickerActiveIndex: Int = 0
@@ -67,7 +68,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                 return
             }
             
-            self.FetchedSources = [Sources]()
+            self.fetchedSources = [Sources]()
             
             do {
                 let json = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! [String: AnyObject]
@@ -86,7 +87,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                         //source.sortBysAvailable = sourceFromJson["sortBysAvailable"] as? String
                         
                         if source.id != nil {
-                            self.FetchedSources.append(source)
+                            self.fetchedSources.append(source)
                         }
                         
                         if let category = sourceFromJson["category"] as? String {
@@ -131,10 +132,11 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     
     // MARK: filters(segment+picker)
     
+    // every time any position(segment and two components of picker) has been changed filters work
     func filterListIsSegmentChanged() {
         languageActiveIndex = segmentControl.selectedSegmentIndex
         
-        sourcesBase = self.FetchedSources
+        sourcesBase = self.fetchedSources
         if languageActiveIndex != 0 {
             sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex]}
         }
@@ -216,7 +218,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                 self.sourcesBase[k].id = arrId?[k]    // neccessary in case user taps source just after saw saved list
             }
         } else {
-            self.sourcesBase = self.FetchedSources
+            self.sourcesBase = self.fetchedSources
         }
         
         DispatchQueue.main.async {
@@ -288,7 +290,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
         
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
-        sourcesBase = self.FetchedSources
+        sourcesBase = self.fetchedSources
         
         if component == 0 { // categories picker
             filterCategoryPickerChanged(row: row)
