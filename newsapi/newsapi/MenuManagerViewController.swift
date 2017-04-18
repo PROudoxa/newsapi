@@ -15,7 +15,7 @@ protocol SourceDidSelected {
 class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITableViewDelegate, UITableViewDataSource {
 
     var delegate: SourceDidSelected? = nil
-    var sources: [Sources]? = []
+    var FetchedSources: [Sources] = []
     var sourcesBase: [Sources] = []
     let defaults = UserDefaults.standard
 
@@ -44,19 +44,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     }
     
     @IBAction func segmentChanged(_ sender: Any) {
-        languageActiveIndex = segmentControl.selectedSegmentIndex
-        
-        sourcesBase = self.sources!
-        if languageActiveIndex != 0 {
-            sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex]}
-        }
-        if categoriesPickerActiveIndex != 0 {
-            sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][categoriesPickerActiveIndex] }
-        }
-        if countriesPickerActiveIndex != 0 {
-            sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][countriesPickerActiveIndex] }
-        }
-        
+        filterListIsSegmentChanged()
         self.tableView.reloadData()
     }
     
@@ -79,7 +67,7 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                 return
             }
             
-            self.sources = [Sources]()
+            self.FetchedSources = [Sources]()
             
             do {
                 let json = try JSONSerialization.jsonObject(with: data!, options: .mutableContainers) as! [String: AnyObject]
@@ -93,12 +81,12 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                         source.country = sourceFromJson["country"] as? String
                         source.name = sourceFromJson["name"] as? String
                         source.id = sourceFromJson["id"] as? String
-                        source.url = sourceFromJson["url"] as? String
-                        source.descriptionSource = sourceFromJson["description"] as? String
-                        source.sortBysAvailable = sourceFromJson["sortBysAvailable"] as? String
+                        //source.url = sourceFromJson["url"] as? String
+                        //source.descriptionSource = sourceFromJson["description"] as? String
+                        //source.sortBysAvailable = sourceFromJson["sortBysAvailable"] as? String
                         
                         if source.id != nil {
-                            self.sources?.append(source)
+                            self.FetchedSources.append(source)
                         }
                         
                         if let category = sourceFromJson["category"] as? String {
@@ -128,16 +116,10 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
                         if (self.pickerDataSource[0] != categoriesArray || self.pickerDataSource[1] != countriesArray) {
                             self.pickerDataSource = [categoriesArray, countriesArray]
                             self.pickerView.reloadAllComponents()
-                            //todo: resave arrays
                         }
                     }
                 }
-                
-                self.sourcesBase = self.sources!
-                
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                }
+                self.restoreLastListOfsources()
                 
             } catch let error {
                 print(error)
@@ -146,33 +128,54 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
         task.resume()
     }
     
-    func restorePickerAndSegmentIndexes() {
-        let languageActiveIndexSaved: Int? = defaults.integer(forKey: "languageActiveIndex")
-        let categoriesPickerActiveIndexSaved: Int? = defaults.integer(forKey: "categoriesPickerActiveIndex")
-        let countriesPickerActiveIndexSaved: Int? = defaults.integer(forKey: "countriesPickerActiveIndex")
-
-        if  languageActiveIndexSaved != nil {
-            languageActiveIndex = languageActiveIndexSaved!
+    
+    // MARK: filters(segment+picker)
+    
+    func filterListIsSegmentChanged() {
+        languageActiveIndex = segmentControl.selectedSegmentIndex
+        
+        sourcesBase = self.FetchedSources
+        if languageActiveIndex != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex]}
         }
-        if  categoriesPickerActiveIndexSaved != nil {
-            languageActiveIndex = categoriesPickerActiveIndexSaved!
+        if categoriesPickerActiveIndex != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][categoriesPickerActiveIndex] }
         }
-        if countriesPickerActiveIndexSaved != nil {
-            languageActiveIndex = countriesPickerActiveIndexSaved!
+        if countriesPickerActiveIndex != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][countriesPickerActiveIndex] }
         }
     }
     
-    func savePickerAndSegmentIndexes() {
-        defaults.set(countriesPickerActiveIndex, forKey: "countriesPickerActiveIndex")
-        defaults.set(categoriesPickerActiveIndex, forKey: "categoriesPickerActiveIndex")
-        defaults.set(languageActiveIndex, forKey: "languageActiveIndex")
+    func filterCategoryPickerChanged(row: Int) {
+        if row != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][row] }
+        }
+        if (languageActiveIndex != 0) && (languageActiveIndex < languagesArray.count){
+            sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
+        }
+        if (countriesPickerActiveIndex != 0) && (countriesPickerActiveIndex < pickerDataSource[1].count) {
+            sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][countriesPickerActiveIndex] }
+        }
     }
+    
+    func filterCountryPickerChanged(row: Int) {
+        if row != 0 {
+            sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][row] }
+        }
+        if (languageActiveIndex != 0) && (languageActiveIndex < languagesArray.count){
+            sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
+        }
+        if (categoriesPickerActiveIndex != 0) && (categoriesPickerActiveIndex < pickerDataSource[0].count) {
+            sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][categoriesPickerActiveIndex] }
+        }
+    }
+    
     
     // MARK: tableView
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listOfSourcesCell", for: indexPath)
-        cell.textLabel?.text = self.sources?[indexPath.item].name ?? "unknown source"
+        cell.textLabel?.text = sourcesBase[indexPath.item].name ?? "unknown source"
         
         return cell
     }
@@ -192,8 +195,72 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
             delegate?.userDidSelectSource(sourceId: sourceId, lastSourceName: lastSourceName)
     
             savePickerAndSegmentIndexes()
+            saveListOfSources()
+            self.tableView.reloadData()
+            
             self.navigationController?.popViewController(animated: true)
         }
+    }
+    
+    // MARK: saving & restoration
+    
+    func restoreLastListOfsources() {
+        let count = self.defaults.integer(forKey: "quantityOfSources")
+        let arrnames: [String]? = self.defaults.object(forKey: "lastSourcesList_Names") as! [String]?
+        let arrId: [String]? = self.defaults.object(forKey: "lastSourcesList_Id") as! [String]?
+        
+        if (arrnames != nil) && ((arrnames?.count)! > -1) {
+            for k in 0...count-1 {
+                self.sourcesBase.append(Sources())
+                self.sourcesBase[k].name = arrnames?[k] // shows list(names) of sources which user saw previous time
+                self.sourcesBase[k].id = arrId?[k]    // neccessary in case user taps source just after saw saved list
+            }
+        } else {
+            self.sourcesBase = self.FetchedSources
+        }
+        
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
+    func restorePickerAndSegmentIndexes() {
+        let languageActiveIndexSaved: Int? = defaults.integer(forKey: "languageActiveIndex")
+        let categoriesPickerActiveIndexSaved: Int? = defaults.integer(forKey: "categoriesPickerActiveIndex")
+        let countriesPickerActiveIndexSaved: Int? = defaults.integer(forKey: "countriesPickerActiveIndex")
+        
+        if  languageActiveIndexSaved != nil {
+            languageActiveIndex = languageActiveIndexSaved!
+            segmentControl.selectedSegmentIndex = languageActiveIndex
+        }
+        if  categoriesPickerActiveIndexSaved != nil {
+            categoriesPickerActiveIndex = categoriesPickerActiveIndexSaved!
+            pickerView.selectRow(categoriesPickerActiveIndex, inComponent: 0, animated: true)
+        }
+        if countriesPickerActiveIndexSaved != nil {
+            countriesPickerActiveIndex = countriesPickerActiveIndexSaved!
+            pickerView.selectRow(countriesPickerActiveIndex, inComponent: 1, animated: true)
+        }
+    }
+    
+    func savePickerAndSegmentIndexes() {
+        defaults.set(countriesPickerActiveIndex, forKey: "countriesPickerActiveIndex")
+        defaults.set(categoriesPickerActiveIndex, forKey: "categoriesPickerActiveIndex")
+        defaults.set(languageActiveIndex, forKey: "languageActiveIndex")
+    }
+    
+    func saveListOfSources() {
+        var savedNamesList: [String] = []
+        var savedId: [String] = []
+        
+        for elementOfList in sourcesBase {
+            savedNamesList.append(elementOfList.name!)
+            savedId.append(elementOfList.id!)
+        }
+        
+        defaults.set(savedNamesList.count, forKey: "quantityOfSources")
+        defaults.set(savedNamesList, forKey: "lastSourcesList_Names")
+        defaults.set(savedId, forKey: "lastSourcesList_Id")
     }
     
     
@@ -204,15 +271,15 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
     }
     
     func pickerView(_ pickerView: UIPickerView, widthForComponent component: Int) -> CGFloat {
-        print(pickerView)
-        if component == 0 {
-            return CGFloat(300.0)
+        switch component {
+            case 0: return CGFloat(240.0)
+            case 1: return CGFloat(40.0)
+            default: return (180.0)
         }
-        return CGFloat(40.0)
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return pickerDataSource[component].count;
+        return pickerDataSource[component].count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
@@ -221,31 +288,15 @@ class MenuManagerViewController: UIViewController, UIPickerViewDataSource, UIPic
         
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
-        sourcesBase = self.sources!
+        sourcesBase = self.FetchedSources
         
         if component == 0 { // categories picker
-            if row != 0 {
-                sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][row] }
-            }
-            if (languageActiveIndex != 0) && (languageActiveIndex < languagesArray.count){
-                sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
-            }
-            if (countriesPickerActiveIndex != 0) && (countriesPickerActiveIndex < pickerDataSource[1].count) {
-                sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][countriesPickerActiveIndex] }
-            }
+            filterCategoryPickerChanged(row: row)
             categoriesPickerActiveIndex = row
         }
         
         if component == 1 { // countries picker
-            if row != 0 {
-                sourcesBase = sourcesBase.filter(){ $0.country == pickerDataSource[1][row] }
-            }
-            if (languageActiveIndex != 0) && (languageActiveIndex < languagesArray.count){
-                sourcesBase = sourcesBase.filter(){ $0.language == languagesArray[languageActiveIndex] }
-            }
-            if (categoriesPickerActiveIndex != 0) && (categoriesPickerActiveIndex < pickerDataSource[0].count) {
-                sourcesBase = sourcesBase.filter(){ $0.category == pickerDataSource[0][categoriesPickerActiveIndex] }
-            }
+            filterCountryPickerChanged(row: row)
             countriesPickerActiveIndex = row
         }
         self.tableView.reloadData()
